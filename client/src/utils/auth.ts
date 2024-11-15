@@ -1,11 +1,11 @@
-import { JwtPayload } from 'jwt-decode';
+import { JwtPayload } from "jwt-decode";
 
 // Add type definition for jwtDecode
 declare function jwtDecode(token: string): JwtPayload;
 
 class AuthService {
   // Type-casted function for decoding JWT
-  jwtDecodeFn = jwtDecode as (token: string) => JwtPayload; 
+  jwtDecodeFn = jwtDecode as (token: string) => JwtPayload;
 
   // Decodes the JWT token and returns the user profile information
   getProfile() {
@@ -36,19 +36,19 @@ class AuthService {
 
   // Retrieves the token from localStorage
   getToken(): string | null {
-    return localStorage.getItem('id_token');
+    return localStorage.getItem("id_token");
   }
 
   // Saves the token to localStorage and redirects to the home page
   login(idToken: string) {
-    localStorage.setItem('id_token', idToken);
-    window.location.assign('/');
+    localStorage.setItem("id_token", idToken);
+    window.location.assign("/");
   }
 
   // Removes the token from localStorage and redirects to the login page
   logout() {
-    localStorage.removeItem('id_token');
-    window.location.assign('/login');
+    localStorage.removeItem("id_token");
+    window.location.assign("/login");
   }
 }
 
