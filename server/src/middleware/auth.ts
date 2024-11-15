@@ -6,7 +6,7 @@ interface JwtPayload {
   username: string;
 }
 
-export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -14,14 +14,23 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     return res.status(401).json({ message: 'Access token is missing' });
   }
 
-  jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: 'Invalid or expired token' });
-    }
+  try {
+    const decoded = await new Promise<JwtPayload | undefined>((resolve, reject) => {
+      jwt.verify(token, process.env.JWT_SECRET as string, (err, decoded) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(decoded as JwtPayload);
+        }
+      });
+    });
 
     // Attach decoded token (user data) to the request object
-    (req as any).user = decoded as JwtPayload;
-
+    (req as any).user = decoded;
     next();
-  });
+  } catch (error) {
+    return res.status(403).json({ message: 'Invalid or expired token' });
+  }
+
+  return; // Add this line to ensure all code paths return a value
 };
